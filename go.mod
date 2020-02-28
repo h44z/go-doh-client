@@ -1,1 +1,1 @@
-module github.com/babolivier/go-doh-client
+module github.com/dnsadblock/go-doh-client

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"crypto/tls"
 )
 
 // exchangeHTTPS sends a given query to a given resolver using a DoH POST

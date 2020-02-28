@@ -26,7 +26,7 @@ func exchangeHTTPS(q []byte, resolver string, allowInsecure bool) (a []byte, err
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify : allowInsecure},
 	}
-	client := http.Client{}
+	client := http.Client{Transport: tr}
 	resp, err := client.Do(req)
 	if err != nil {
 		return

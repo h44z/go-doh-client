@@ -8,6 +8,9 @@ type Resolver struct {
 	// The DNS class to lookup with, must be one of IN, CS, CH, HS or ANYCLASS.
 	// As a hint, the most used class nowadays is IN (Internet).
 	Class DNSClass
+	// Flag to allow requests to insecure addresses (handy for local testing)
+	// with self signed certificates
+	AllowInsecure bool
 }
 
 // lookup encodes a DNS query, sends it over HTTPS then parses the response.
@@ -15,7 +18,7 @@ type Resolver struct {
 // parsing the response headers.
 func (r *Resolver) lookup(fqdn string, t DNSType, c DNSClass) ([]answer, error) {
 	q := encodeQuery(fqdn, t, c)
-	res, err := exchangeHTTPS(q, r.Host)
+	res, err := exchangeHTTPS(q, r.Host, r.AllowInsecure)
 	if err != nil {
 		return nil, err
 	}

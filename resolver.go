@@ -1,16 +1,25 @@
 // Package doh implements client operations for DoH (DNS over HTTPS) lookups.
 package doh
 
+import (
+	"strings"
+)
+
 // Resolver handles lookups.
 type Resolver struct {
-	// The host to send DoH requests to.
-	Host string
+	// The URL to send DoH requests to.
+	URL string
 	// The DNS class to lookup with, must be one of IN, CS, CH, HS or ANYCLASS.
 	// As a hint, the most used class nowadays is IN (Internet).
 	Class DNSClass
 	// Flag to allow requests to insecure addresses (handy for local testing)
-	// with self signed certificates
+	// with self signed certificates. Only matters if a HTTPS URL is specified.
 	AllowInsecure bool
+}
+
+// IsHTTPS returns true, if the specified resolver uses HTTPS as transport protocol.
+func (r *Resolver) IsHTTPS() bool {
+	return strings.HasPrefix(r.URL, "https")
 }
 
 // lookup encodes a DNS query, sends it over HTTPS then parses the response.
@@ -18,7 +27,13 @@ type Resolver struct {
 // parsing the response headers.
 func (r *Resolver) lookup(fqdn string, t DNSType, c DNSClass) ([]answer, error) {
 	q := encodeQuery(fqdn, t, c)
-	res, err := exchangeHTTPS(q, r.Host, r.AllowInsecure)
+	var res []byte
+	var err error
+	if r.IsHTTPS() {
+		res, err = exchangeHTTPS(q, r.URL, r.AllowInsecure)
+	} else {
+		res, err = exchangeHTTP(q, r.URL)
+	}
 	if err != nil {
 		return nil, err
 	}

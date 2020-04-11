@@ -1,1 +1,3 @@
-module github.com/dnsadblock/go-doh-client
+module github.com/h44z/go-doh-client
+
+go 1.14
